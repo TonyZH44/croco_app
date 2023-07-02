@@ -34,13 +34,29 @@ class CityListState extends State<CityList> {
     return FutureBuilder<List>(
       future: listOfCities,
       builder: ((context, snapshot) {
+        List<Widget> children = [];
+        //children = <Widget>[];
         if (snapshot.hasData) {
           snapshot.data!.forEach((city) {
-            debugPrint(city.toString());
+            children.add(city);
+            //debugPrint(city.toString());
           });
+        } else {
+          children.add(
+            const SizedBox(
+              width: 60,
+              height: 60,
+              child: CircularProgressIndicator(),
+            )
+          );
         }
-        return const Center(
-          child: CircularProgressIndicator(),
+        return Center(
+          child: SingleChildScrollView(
+            child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: children,
+            )
+          )
         );
       })
     );
@@ -61,8 +77,9 @@ class CityListState extends State<CityList> {
 // }
 
 Future<List<City>> fetchCityList() async {
+  
   final response = await http.get(Uri.parse('https://649befbd0480757192372825.mockapi.io/api/v1/cities'));
-  debugPrint(response.body);
+  //debugPrint(response.body);
   if (response.statusCode == 200) {
     String cityText = response.body;
     
@@ -118,9 +135,9 @@ class City extends StatelessWidget {
       children: [
         Image.network(
           image,
-
+          
         ),
-        Column(
+        Column(crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(name),
             Text('$totalPeople человек'),
