@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'streetlist.dart';
 
 class CityList extends StatefulWidget {
   const CityList({super.key});
@@ -128,52 +129,61 @@ class City extends StatelessWidget {
         ),
         width: 328,
         height: 426,
-        child: Column(
-          children: [
-            Container(
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(8))),
-                width: 296,
-                height: 240,
-                child: Image.network(
-                  image,
-                )),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w500, fontSize: 20),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Text('$totalPeople человек',
+        child: GestureDetector(
+          onTap: (() {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StreetListPage(cityId: id),
+                ));
+          }),
+          child: Column(
+            children: [
+              Container(
+                  decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(8))),
+                  width: 296,
+                  height: 240,
+                  child: Image.network(
+                    image,
+                  )),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
                     style: const TextStyle(
-                      fontSize: 16,
-                    )),
-                const SizedBox(
-                  height: 8,
-                ),
-                Text('Широта $lat',
-                    style: const TextStyle(
-                      fontSize: 16,
-                    )),
-                Text('Долгота $long',
-                    style: const TextStyle(
-                      fontSize: 16,
-                    )),
-                const SizedBox(
-                  height: 8,
-                ),
-                Text('Фото сделано $dateTimeImage',
-                    style: const TextStyle(
-                        fontSize: 14,
-                        color: Color.fromARGB(102, 112, 133, 100)))
-              ],
-            )
-          ],
+                        fontWeight: FontWeight.w500, fontSize: 20),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text('$totalPeople человек',
+                      style: const TextStyle(
+                        fontSize: 16,
+                      )),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Text('Широта $lat',
+                      style: const TextStyle(
+                        fontSize: 16,
+                      )),
+                  Text('Долгота $long',
+                      style: const TextStyle(
+                        fontSize: 16,
+                      )),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Text('Фото сделано $dateTimeImage',
+                      style: const TextStyle(
+                          fontSize: 14,
+                          color: Color.fromARGB(102, 112, 133, 100)))
+                ],
+              )
+            ],
+          ),
         ));
   }
 }
