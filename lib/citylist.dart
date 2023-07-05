@@ -71,7 +71,9 @@ class CityListState extends State<CityList> {
                   width: 60,
                   height: 60,
                   child: CircularProgressIndicator(
+                    backgroundColor: Color.fromRGBO(242, 243, 245, 1),
                     color: Colors.black,
+                    strokeWidth: 6,
                   ),
                 ),
               ),

@@ -52,15 +52,6 @@ class _StreetListPageState extends State<StreetListPage> {
           Widget widget;
           List<Widget> children = [];
           if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-            // children.add(AppBar(
-            //   systemOverlayStyle:
-            //       const SystemUiOverlayStyle(statusBarColor: Colors.white),
-            //   shadowColor: Colors.white,
-            //   elevation: 0,
-            //   title: const Text(
-            //     'Улицы города',
-            //   ),
-            // ));
             for (var street in snapshot.data!) {
               children.add(street);
             }
@@ -105,7 +96,9 @@ class _StreetListPageState extends State<StreetListPage> {
                   width: 60,
                   height: 60,
                   child: CircularProgressIndicator(
+                    backgroundColor: Color.fromRGBO(242, 243, 245, 1),
                     color: Colors.black,
+                    strokeWidth: 6,
                   ),
                 ),
               ),
