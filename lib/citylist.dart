@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'streetlist.dart';
+import 'errorscreen.dart';
 
 class CityList extends StatefulWidget {
   const CityList({super.key});
@@ -20,12 +22,8 @@ class CityListState extends State<CityList> {
   @override
   void initState() {
     super.initState();
-    // fetchCityList().then((value) => {
-    //   futureList = value
-    // });
 
     listOfCities = fetchCityList();
-    //listOfCities = parseCities(futureList);
   }
 
   @override
@@ -33,51 +31,63 @@ class CityListState extends State<CityList> {
     return FutureBuilder<List>(
         future: listOfCities,
         builder: ((context, snapshot) {
+          Widget widget;
           List<Widget> children = [];
-          //children = <Widget>[];
-          if (snapshot.hasData) {
-            snapshot.data!.forEach((city) {
+          if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+            for (var city in snapshot.data!) {
               children.add(city);
-              //debugPrint(city.toString());
-            });
+            }
+            widget = Scaffold(
+                appBar: AppBar(
+                  systemOverlayStyle: const SystemUiOverlayStyle(
+                      statusBarColor: Colors.white,
+                      statusBarIconBrightness: Brightness.dark),
+                  shadowColor: Colors.white,
+                  elevation: 0,
+                  title: const Text(
+                    'Города',
+                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                body: Center(
+                    child: SingleChildScrollView(
+                        child: Column(children: children))));
+          } else if (snapshot.hasError ||
+              (snapshot.hasData && snapshot.data!.isEmpty)) {
+            widget = Scaffold(
+              body: ErrorScreen(
+                  parent: super.widget,
+                  imageUrl: 'assets/fail-cities.png',
+                  headerText: 'Оглядитесь…',
+                  supportText:
+                      'Нет ни городов, ни улиц. Очевидно, что‑то сломалось и мы уже это чиним.',
+                  buttonText: 'Попробовать снова',
+                  goBack: false),
+            );
           } else {
-            children.add(const SizedBox(
-              width: 60,
-              height: 60,
-              child: CircularProgressIndicator(
-                color: Colors.black,
+            widget = const Scaffold(
+              body: Center(
+                child: SizedBox(
+                  width: 60,
+                  height: 60,
+                  child: CircularProgressIndicator(
+                    color: Colors.black,
+                  ),
+                ),
               ),
-            ));
+            );
           }
-          return Center(
-              child: SingleChildScrollView(
-                  child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: children,
-          )));
+          return widget;
         }));
   }
 }
 
-// Future<String> fetchCityList() async {
-//   final response = await http.get(Uri.parse('https://649befbd0480757192372825.mockapi.io/api/v1/cities'));
-
-//   if (response.statusCode == 200) {
-//     String cityText = response.body;
-
-//     return cityText;
-//   } else {
-//     throw Exception('Failed to load cities');
-//   }
-// }
-
 Future<List<City>> fetchCityList() async {
   final response = await http.get(
       Uri.parse('https://649befbd0480757192372825.mockapi.io/api/v1/cities'));
-  //debugPrint(response.body);
   if (response.statusCode == 200) {
     String cityText = response.body;
-
+    //String empty = '[]';
     return parseCities(cityText);
   } else {
     throw Exception('Failed to load cities');

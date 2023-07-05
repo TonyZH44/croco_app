@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'errorscreen.dart';
 import 'package:http/http.dart' as http;
 
 class StreetListPage extends StatefulWidget {
@@ -15,7 +16,6 @@ class StreetListPage extends StatefulWidget {
 
 class _StreetListPageState extends State<StreetListPage> {
   late Future<List<Street>> listOfStreets;
-  //bool showAppbar = false;
 
   @override
   void initState() {
@@ -29,7 +29,7 @@ class _StreetListPageState extends State<StreetListPage> {
 
     if (response.statusCode == 200) {
       String streetJson = response.body;
-
+      //String empty = '[]';
       return parseStreets(streetJson);
     }
     throw Exception('Failed to load streets');
@@ -45,22 +45,14 @@ class _StreetListPageState extends State<StreetListPage> {
 
   @override
   Widget build(BuildContext context) {
+    int cityId = widget.cityId;
     return Scaffold(
-      // appBar: showAppbar
-      //     ? (AppBar(
-      //         shadowColor: Colors.white,
-      //         elevation: 0,
-      //         title: const Text(
-      //           'Улицы города',
-      //         ),
-      //       ))
-      //     : null,
       body: FutureBuilder<List>(
           future: listOfStreets,
           builder: ((context, snapshot) {
             Widget widget;
             List<Widget> children = [];
-            if (snapshot.hasData) {
+            if (snapshot.hasData && snapshot.data!.isNotEmpty) {
               children.add(AppBar(
                 systemOverlayStyle:
                     const SystemUiOverlayStyle(statusBarColor: Colors.white),
@@ -73,58 +65,25 @@ class _StreetListPageState extends State<StreetListPage> {
               for (var street in snapshot.data!) {
                 children.add(street);
               }
-              //showAppbar = true;
               widget = Center(child: Column(children: children));
+            } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+              widget = ErrorScreen(
+                parent: StreetListPage(cityId: cityId),
+                imageUrl: 'assets/no-streets.png',
+                headerText: 'Тут пусто...',
+                supportText: 'Названия улиц в этом городе ещё не добавлены',
+                buttonText: 'Вернуться назад',
+                goBack: true,
+              );
             } else if (snapshot.hasError) {
-              widget = Center(
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height / 4,
-                    ),
-                    SizedBox(
-                      width: 320,
-                      height: 320,
-                      child: Image.asset('assets/fail-streets.png'),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.fromLTRB(0, 24, 0, 4),
-                      child: const Text(
-                        'Без улиц можно потеряться',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    Container(
-                      width: 320,
-                      margin: const EdgeInsets.fromLTRB(0, 0, 0, 116),
-                      child: const Text(
-                        '''Не смогли загрузить список улиц, спросите у кого‑нибудь как пройти''',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(0xFF667085),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      height: 44,
-                      width: 328,
-                      decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
-                      child: TextButton(
-                          onPressed: (() => setState(() {})),
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.black,
-                          ),
-                          child: const Text(
-                            'Попробовать снова',
-                            style: TextStyle(fontSize: 16),
-                          )),
-                    )
-                  ],
-                ),
+              widget = ErrorScreen(
+                parent: StreetListPage(cityId: cityId),
+                imageUrl: 'assets/fail-streets.png',
+                headerText: 'Без улиц можно потеряться',
+                supportText:
+                    'Не смогли загрузить список улиц, спросите у кого‑нибудь как пройти',
+                buttonText: 'Попробовать снова',
+                goBack: false,
               );
             } else {
               widget = Container(

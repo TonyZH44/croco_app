@@ -23,9 +23,7 @@ class MyApp extends StatelessWidget {
               onPrimary: Colors.black),
           fontFamily: 'Inter',
         ),
-        home: const MyHomePage(
-          title: 'Города',
-        ));
+        home: const CityList());
   }
 }
 
@@ -60,22 +58,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Colors.white,
-            statusBarIconBrightness: Brightness.dark),
-        shadowColor: Colors.white,
-        elevation: 0,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(
-          widget.title,
-          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w500),
-        ),
-      ),
-      body: const Center(
+      body: Center(
           // Center is a layout widget. It takes a single child and positions it
           // in the middle of the parent.
           child: CityList()),
