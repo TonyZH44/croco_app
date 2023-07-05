@@ -46,37 +46,49 @@ class _StreetListPageState extends State<StreetListPage> {
   @override
   Widget build(BuildContext context) {
     int cityId = widget.cityId;
-    return Scaffold(
-      body: FutureBuilder<List>(
-          future: listOfStreets,
-          builder: ((context, snapshot) {
-            Widget widget;
-            List<Widget> children = [];
-            if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-              children.add(AppBar(
-                systemOverlayStyle:
-                    const SystemUiOverlayStyle(statusBarColor: Colors.white),
-                shadowColor: Colors.white,
-                elevation: 0,
-                title: const Text(
-                  'Улицы города',
+    return FutureBuilder<List>(
+        future: listOfStreets,
+        builder: ((context, snapshot) {
+          Widget widget;
+          List<Widget> children = [];
+          if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+            // children.add(AppBar(
+            //   systemOverlayStyle:
+            //       const SystemUiOverlayStyle(statusBarColor: Colors.white),
+            //   shadowColor: Colors.white,
+            //   elevation: 0,
+            //   title: const Text(
+            //     'Улицы города',
+            //   ),
+            // ));
+            for (var street in snapshot.data!) {
+              children.add(street);
+            }
+            widget = Scaffold(
+                appBar: AppBar(
+                  systemOverlayStyle:
+                      const SystemUiOverlayStyle(statusBarColor: Colors.white),
+                  shadowColor: Colors.white,
+                  elevation: 0,
+                  title: const Text(
+                    'Улицы города',
+                  ),
                 ),
-              ));
-              for (var street in snapshot.data!) {
-                children.add(street);
-              }
-              widget = Center(child: Column(children: children));
-            } else if (snapshot.hasData && snapshot.data!.isEmpty) {
-              widget = ErrorScreen(
+                body: SingleChildScrollView(child: Column(children: children)));
+          } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+            widget = Scaffold(
+              body: ErrorScreen(
                 parent: StreetListPage(cityId: cityId),
                 imageUrl: 'assets/no-streets.png',
                 headerText: 'Тут пусто...',
                 supportText: 'Названия улиц в этом городе ещё не добавлены',
                 buttonText: 'Вернуться назад',
                 goBack: true,
-              );
-            } else if (snapshot.hasError) {
-              widget = ErrorScreen(
+              ),
+            );
+          } else if (snapshot.hasError) {
+            widget = Scaffold(
+              body: ErrorScreen(
                 parent: StreetListPage(cityId: cityId),
                 imageUrl: 'assets/fail-streets.png',
                 headerText: 'Без улиц можно потеряться',
@@ -84,27 +96,23 @@ class _StreetListPageState extends State<StreetListPage> {
                     'Не смогли загрузить список улиц, спросите у кого‑нибудь как пройти',
                 buttonText: 'Попробовать снова',
                 goBack: false,
-              );
-            } else {
-              widget = Container(
-                margin: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.height / 2),
-                child: const Center(
-                  child: SizedBox(
-                    width: 60,
-                    height: 60,
-                    child: CircularProgressIndicator(
-                      color: Colors.black,
-                    ),
+              ),
+            );
+          } else {
+            widget = const Scaffold(
+              body: Center(
+                child: SizedBox(
+                  width: 60,
+                  height: 60,
+                  child: CircularProgressIndicator(
+                    color: Colors.black,
                   ),
                 ),
-              );
-            }
-            return SingleChildScrollView(
-              child: widget,
+              ),
             );
-          })),
-    );
+          }
+          return widget;
+        }));
   }
 }
 
