@@ -14,6 +14,7 @@ class StreetListPage extends StatefulWidget {
 
 class _StreetListPageState extends State<StreetListPage> {
   late Future<List<Street>> listOfStreets;
+  //bool showAppbar = false;
 
   @override
   void initState() {
@@ -44,9 +45,19 @@ class _StreetListPageState extends State<StreetListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: showAppbar
+      //     ? (AppBar(
+      //         shadowColor: Colors.white,
+      //         elevation: 0,
+      //         title: const Text(
+      //           'Улицы города',
+      //         ),
+      //       ))
+      //     : null,
       body: FutureBuilder<List>(
           future: listOfStreets,
           builder: ((context, snapshot) {
+            Widget widget;
             List<Widget> children = [];
             if (snapshot.hasData) {
               children.add(AppBar(
@@ -59,19 +70,49 @@ class _StreetListPageState extends State<StreetListPage> {
               for (var street in snapshot.data!) {
                 children.add(street);
               }
+              //showAppbar = true;
+              widget = Center(child: Column(children: children));
+            } else if (snapshot.hasError) {
+              widget = Column(
+                children: [
+                  SizedBox(
+                    width: 320,
+                    height: 320,
+                    child: Image.asset('assets/fail-streets.png'),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(0, 24, 0, 4),
+                    child: const Text('Без улиц можно потеряться'),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 116),
+                    child: const Text(
+                        '''Не смогли загрузить список улиц, спросите у кого‑нибудь как пройти'''),
+                  ),
+                  TextButton(
+                      onPressed: (() => setState(() {})),
+                      style:
+                          TextButton.styleFrom(backgroundColor: Colors.black),
+                      child: const Text('Попробовать снова'))
+                ],
+              );
             } else {
-              children.add(const Center(
-                child: SizedBox(
-                  width: 60,
-                  height: 60,
-                  child: CircularProgressIndicator(
-                    color: Colors.black,
+              widget = Container(
+                margin: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height / 2),
+                child: const Center(
+                  child: SizedBox(
+                    width: 60,
+                    height: 60,
+                    child: CircularProgressIndicator(
+                      color: Colors.black,
+                    ),
                   ),
                 ),
-              ));
+              );
             }
             return SingleChildScrollView(
-              child: Column(children: children),
+              child: widget,
             );
           })),
     );
@@ -104,7 +145,7 @@ class Street extends StatelessWidget {
       decoration: const BoxDecoration(
           color: Colors.white,
           border: Border(
-              bottom: BorderSide(
+              top: BorderSide(
                   width: 1, color: Color.fromRGBO(234, 236, 240, 1)))),
       alignment: Alignment.centerLeft,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

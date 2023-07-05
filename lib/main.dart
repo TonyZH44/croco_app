@@ -12,19 +12,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch().copyWith(
-          secondary: Colors.white,
-          primary: Colors.white,
-          onPrimary: Colors.black
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSwatch().copyWith(
+              secondary: Colors.white,
+              primary: Colors.white,
+              onPrimary: Colors.black),
+          fontFamily: 'Inter',
         ),
-        fontFamily: 'Inter',
-
-        
-      ),
-      home: const MyHomePage(title: 'Города',)
-    );
+        home: const MyHomePage(
+          title: 'Города',
+        ));
   }
 }
 
@@ -61,15 +59,18 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
+        shadowColor: Colors.white,
+        elevation: 0,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text(
+          widget.title,
+        ),
       ),
       body: const Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: CityList()
-      ),
+          // Center is a layout widget. It takes a single child and positions it
+          // in the middle of the parent.
+          child: CityList()),
     );
   }
 }
