@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 class StreetListPage extends StatefulWidget {
@@ -61,6 +62,8 @@ class _StreetListPageState extends State<StreetListPage> {
             List<Widget> children = [];
             if (snapshot.hasData) {
               children.add(AppBar(
+                systemOverlayStyle:
+                    const SystemUiOverlayStyle(statusBarColor: Colors.white),
                 shadowColor: Colors.white,
                 elevation: 0,
                 title: const Text(
@@ -73,28 +76,55 @@ class _StreetListPageState extends State<StreetListPage> {
               //showAppbar = true;
               widget = Center(child: Column(children: children));
             } else if (snapshot.hasError) {
-              widget = Column(
-                children: [
-                  SizedBox(
-                    width: 320,
-                    height: 320,
-                    child: Image.asset('assets/fail-streets.png'),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(0, 24, 0, 4),
-                    child: const Text('Без улиц можно потеряться'),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 116),
-                    child: const Text(
-                        '''Не смогли загрузить список улиц, спросите у кого‑нибудь как пройти'''),
-                  ),
-                  TextButton(
-                      onPressed: (() => setState(() {})),
-                      style:
-                          TextButton.styleFrom(backgroundColor: Colors.black),
-                      child: const Text('Попробовать снова'))
-                ],
+              widget = Center(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 4,
+                    ),
+                    SizedBox(
+                      width: 320,
+                      height: 320,
+                      child: Image.asset('assets/fail-streets.png'),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.fromLTRB(0, 24, 0, 4),
+                      child: const Text(
+                        'Без улиц можно потеряться',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    Container(
+                      width: 320,
+                      margin: const EdgeInsets.fromLTRB(0, 0, 0, 116),
+                      child: const Text(
+                        '''Не смогли загрузить список улиц, спросите у кого‑нибудь как пройти''',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF667085),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: 44,
+                      width: 328,
+                      decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(8))),
+                      child: TextButton(
+                          onPressed: (() => setState(() {})),
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.black,
+                          ),
+                          child: const Text(
+                            'Попробовать снова',
+                            style: TextStyle(fontSize: 16),
+                          )),
+                    )
+                  ],
+                ),
               );
             } else {
               widget = Container(

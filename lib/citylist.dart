@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:intl/intl.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -123,10 +124,14 @@ class City extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String formatedTime = DateFormat.yMMMMd('ru').format(dateTimeImage);
     return Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(16)),
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color.fromARGB(255, 228, 228, 228)),
+          borderRadius: const BorderRadius.all(Radius.circular(16)),
         ),
+        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.fromLTRB(0, 20, 0, 0),
         width: 328,
         height: 426,
         child: GestureDetector(
@@ -138,18 +143,23 @@ class City extends StatelessWidget {
                 ));
           }),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                  decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(8))),
-                  width: 296,
-                  height: 240,
-                  child: Image.network(
-                    image,
-                  )),
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(8)),
+                  image: DecorationImage(
+                      image: NetworkImage(image), fit: BoxFit.cover),
+                ),
+                width: 296,
+                height: 240,
+              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(
+                    height: 16,
+                  ),
                   Text(
                     name,
                     style: const TextStyle(
@@ -176,7 +186,7 @@ class City extends StatelessWidget {
                   const SizedBox(
                     height: 8,
                   ),
-                  Text('Фото сделано $dateTimeImage',
+                  Text('Фото сделано $formatedTime',
                       style: const TextStyle(
                           fontSize: 14,
                           color: Color.fromARGB(102, 112, 133, 100)))

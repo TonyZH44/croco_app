@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'citylist.dart';
 
 void main() {
+  initializeDateFormatting();
   runApp(const MyApp());
 }
 
@@ -58,13 +61,18 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarColor: Colors.white,
+            statusBarIconBrightness: Brightness.dark),
         shadowColor: Colors.white,
         elevation: 0,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(
           widget.title,
+          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w500),
         ),
       ),
       body: const Center(
