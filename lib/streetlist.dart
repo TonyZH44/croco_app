@@ -17,16 +17,17 @@ class StreetListPage extends StatefulWidget {
 class _StreetListPageState extends State<StreetListPage> {
   late Future<List<Street>> listOfStreets;
 
+  //Инициализация
   @override
   void initState() {
     super.initState();
-    listOfStreets = getData(widget.cityId);
+    listOfStreets = fetchStreetsList(widget.cityId); //Получение списка улиц
   }
 
-  Future<List<Street>> getData(int cityId) async {
+  Future<List<Street>> fetchStreetsList(int cityId) async {
     final response = await http.get(Uri.parse(
         'https://649befbd0480757192372825.mockapi.io/api/v1/cities/$cityId/streets'));
-
+    //Проверка
     if (response.statusCode == 200) {
       String streetJson = response.body;
       //String empty = '[]';
@@ -35,10 +36,12 @@ class _StreetListPageState extends State<StreetListPage> {
     throw Exception('Failed to load streets');
   }
 
+  //Аналогичный перевод из Json в список виджетов
   List<Street> parseStreets(String streetJson) {
-    var streetListJson = jsonDecode(streetJson) as List;
-    List<Street> streetList =
-        streetListJson.map((street) => Street.fromJson(street)).toList();
+    var streetJsonList = jsonDecode(streetJson) as List;
+    List<Street> streetList = streetJsonList
+        .map((streetJsonObject) => Street.fromJson(streetJsonObject))
+        .toList();
 
     return streetList;
   }
@@ -46,16 +49,19 @@ class _StreetListPageState extends State<StreetListPage> {
   @override
   Widget build(BuildContext context) {
     int cityId = widget.cityId;
+    //Строит дерево виджетов в зависимости от статуса ответа
     return FutureBuilder<List>(
         future: listOfStreets,
         builder: ((context, snapshot) {
           Widget widget;
           List<Widget> children = [];
+          //При успешном ответе
           if (snapshot.hasData && snapshot.data!.isNotEmpty) {
             for (var street in snapshot.data!) {
               children.add(street);
             }
             widget = Scaffold(
+                backgroundColor: Colors.white,
                 appBar: AppBar(
                   systemOverlayStyle:
                       const SystemUiOverlayStyle(statusBarColor: Colors.white),
@@ -67,9 +73,10 @@ class _StreetListPageState extends State<StreetListPage> {
                 ),
                 body: SingleChildScrollView(child: Column(children: children)));
           } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+            //Если список улиц пустой
             widget = Scaffold(
               body: ErrorScreen(
-                parent: StreetListPage(cityId: cityId),
+                page: StreetListPage(cityId: cityId),
                 imageUrl: 'assets/no-streets.png',
                 headerText: 'Тут пусто...',
                 supportText: 'Названия улиц в этом городе ещё не добавлены',
@@ -78,9 +85,10 @@ class _StreetListPageState extends State<StreetListPage> {
               ),
             );
           } else if (snapshot.hasError) {
+            //Если ошибка подключения
             widget = Scaffold(
               body: ErrorScreen(
-                parent: StreetListPage(cityId: cityId),
+                page: StreetListPage(cityId: cityId),
                 imageUrl: 'assets/fail-streets.png',
                 headerText: 'Без улиц можно потеряться',
                 supportText:
@@ -90,6 +98,7 @@ class _StreetListPageState extends State<StreetListPage> {
               ),
             );
           } else {
+            //Индикатор загрузки
             widget = const Scaffold(
               body: Center(
                 child: SizedBox(
@@ -110,6 +119,7 @@ class _StreetListPageState extends State<StreetListPage> {
 }
 
 class Street extends StatelessWidget {
+  //Виджет улица
   final int id, cityId;
   final String name, address;
 
@@ -120,6 +130,7 @@ class Street extends StatelessWidget {
       required this.name,
       required this.address});
 
+  //Фабричный конструктор из Json
   factory Street.fromJson(Map<String, dynamic> json) {
     return Street(
         id: int.parse(json['id']),

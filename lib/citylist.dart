@@ -8,32 +8,62 @@ import 'package:flutter/material.dart';
 import 'streetlist.dart';
 import 'errorscreen.dart';
 
-class CityList extends StatefulWidget {
-  const CityList({super.key});
+class CityListPage extends StatefulWidget {
+  const CityListPage({super.key});
 
   @override
-  CityListState createState() => CityListState();
+  CityListPageState createState() => CityListPageState();
 }
 
-class CityListState extends State<CityList> {
-  //late String futureList;
+class CityListPageState extends State<CityListPage> {
   late Future<List<City>> listOfCities;
 
   @override
   void initState() {
+    //Инициализация страницы
     super.initState();
 
-    listOfCities = fetchCityList();
+    listOfCities = fetchCityList(); //Загрузка городов
+  }
+
+  Future<List<City>> fetchCityList() async {
+    final response = await http.get(Uri.parse(
+        'https://649befbd0480757192372825.mockapi.io/api/v1/cities')); //Запрос для получения городов
+    //Проверка ответа сервера
+    if (response.statusCode == 200) {
+      String cityJson = response.body;
+      //String empty = '[]';      // Нужен для теста пустого списка
+      return parseCities(cityJson);
+    }
+    throw Exception('Failed to load cities');
+  }
+
+  List<City> parseCities(String cityJson) {
+    //Перевод строки Json в список Json объектов
+    var cityJsonList = jsonDecode(cityJson) as List;
+    //Перевод каждого Json объекта в виджет City
+    List<City> cityList = cityJsonList
+        .map((cityJsonObject) => City.fromJson(cityJsonObject))
+        .toList();
+
+    return cityList;
   }
 
   @override
   Widget build(BuildContext context) {
+    //Строит дерево виджетов в зависимости от статуса ответа
     return FutureBuilder<List>(
         future: listOfCities,
         builder: ((context, snapshot) {
           Widget widget;
-          List<Widget> children = [];
+          List<Widget> children = [
+            const SizedBox(
+              //Для верхнего первого отступа
+              height: 20,
+            )
+          ];
           if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+            //Если все хорошо
             for (var city in snapshot.data!) {
               children.add(city);
             }
@@ -54,9 +84,10 @@ class CityListState extends State<CityList> {
                         child: Column(children: children))));
           } else if (snapshot.hasError ||
               (snapshot.hasData && snapshot.data!.isEmpty)) {
+            //Если пустой ответ или ошибка
             widget = Scaffold(
               body: ErrorScreen(
-                  parent: super.widget,
+                  page: super.widget,
                   imageUrl: 'assets/fail-cities.png',
                   headerText: 'Оглядитесь…',
                   supportText:
@@ -65,6 +96,7 @@ class CityListState extends State<CityList> {
                   goBack: false),
             );
           } else {
+            //Индикатор загрузки
             widget = const Scaffold(
               body: Center(
                 child: SizedBox(
@@ -84,34 +116,15 @@ class CityListState extends State<CityList> {
   }
 }
 
-Future<List<City>> fetchCityList() async {
-  final response = await http.get(
-      Uri.parse('https://649befbd0480757192372825.mockapi.io/api/v1/cities'));
-  if (response.statusCode == 200) {
-    String cityText = response.body;
-    //String empty = '[]';
-    return parseCities(cityText);
-  } else {
-    throw Exception('Failed to load cities');
-  }
-}
-
-List<City> parseCities(String cityText) {
-  var cityListJson = jsonDecode(cityText) as List;
-  List<City> cityList =
-      cityListJson.map((cityJson) => City.fromJson(cityJson)).toList();
-
-  return cityList;
-}
-
 class City extends StatelessWidget {
+  //Виджет город
   final int id;
   final String name;
-  final String image;
+  final String image; //Ссылка на фото
   final DateTime dateTimeImage;
   final int totalPeople;
-  final double lat;
-  final double long;
+  final double lat; //Широта
+  final double long; //Долгота
 
   const City(
       {super.key,
@@ -123,6 +136,7 @@ class City extends StatelessWidget {
       required this.lat,
       required this.long});
 
+  //Фабричный конструктор из Json объекта
   factory City.fromJson(Map<String, dynamic> json) {
     return City(
         id: int.parse(json['id']),
@@ -136,16 +150,17 @@ class City extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String formatedTime = DateFormat.yMMMMd('ru').format(dateTimeImage);
+    String formatedTime =
+        DateFormat.yMMMMd('ru').format(dateTimeImage); //Форматированная дата
     return Container(
         decoration: BoxDecoration(
           border: Border.all(color: const Color.fromARGB(255, 228, 228, 228)),
           borderRadius: const BorderRadius.all(Radius.circular(16)),
         ),
         padding: const EdgeInsets.all(16),
-        margin: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-        width: 328,
-        height: 426,
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 20),
+        //width: 328,
+        //height: 426,
         child: GestureDetector(
           onTap: (() {
             Navigator.push(
@@ -168,6 +183,7 @@ class City extends StatelessWidget {
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                //SizedBoxes используются для отступов, вместо margin
                 children: [
                   const SizedBox(
                     height: 16,
@@ -187,16 +203,16 @@ class City extends StatelessWidget {
                   const SizedBox(
                     height: 8,
                   ),
-                  Text('Широта $lat',
+                  Text('Широта $lat°',
                       style: const TextStyle(
                         fontSize: 16,
                       )),
-                  Text('Долгота $long',
+                  Text('Долгота $long°',
                       style: const TextStyle(
                         fontSize: 16,
                       )),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                   Text('Фото сделано $formatedTime',
                       style: const TextStyle(

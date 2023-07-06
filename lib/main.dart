@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'citylist.dart';
 
@@ -23,6 +22,6 @@ class MyApp extends StatelessWidget {
               onPrimary: Colors.black),
           fontFamily: 'Inter',
         ),
-        home: const CityList());
+        home: const CityListPage());
   }
 }

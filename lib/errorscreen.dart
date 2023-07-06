@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 
 class ErrorScreen extends StatelessWidget {
+  //Экран ошибки
   const ErrorScreen(
       {super.key,
-      required this.parent,
+      required this.page,
       required this.imageUrl,
       required this.headerText,
       required this.supportText,
       required this.buttonText,
       required this.goBack});
 
-  final Widget parent;
+  final Widget page;
   final String imageUrl, headerText, supportText, buttonText;
   final bool goBack;
 
@@ -48,19 +49,22 @@ class ErrorScreen extends StatelessWidget {
             ),
           ),
           Container(
+            //Кнопка
             height: 44,
             width: 328,
             decoration: const BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(8))),
             child: TextButton(
                 onPressed: (() {
+                  //Возврат на предыдущую страницу если true
                   if (goBack) {
                     Navigator.pop(context);
                   } else {
+                    //Обновление текущей страницы
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (BuildContext context) => parent));
+                            builder: (BuildContext context) => page));
                   }
                 }),
                 style: TextButton.styleFrom(
