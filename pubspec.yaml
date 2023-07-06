@@ -39,6 +39,14 @@ dependencies:
   http: ^0.13.5
   convert: ^3.1.1
   intl: ^0.18.1
+  flutter_native_splash: ^2.2.18
+
+flutter_native_splash:
+  android: true
+  ios: true
+  background_image: "assets/splash-bg.png"
+  #color: "#FFFFFF"
+  #image: "assets/splash-without-text.png"
 
 dev_dependencies:
   flutter_test:
